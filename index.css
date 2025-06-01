@@ -1,0 +1,76 @@
+// Button Counter with Debouncing
+// For Arduino and similar microcontrollers
+
+const int BUTTON_PIN = 2;     // Digital pin for button
+const int LCD_RS_PIN = 12;    // LCD register select pin
+const int LCD_EN_PIN = 11;    // LCD enable pin
+const int LCD_D4_PIN = 10;    // LCD data pin 4
+const int LCD_D5_PIN = 9;     // LCD data pin 5
+const int LCD_D6_PIN = 8;     // LCD data pin 6
+const int LCD_D7_PIN = 7;     // LCD data pin 7
+
+// Include LCD library
+#include <LiquidCrystal.h>
+
+// Initialize LCD with pins
+LiquidCrystal lcd(LCD_RS_PIN, LCD_EN_PIN, LCD_D4_PIN, 
+                 LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
+
+// Variables
+int buttonState = HIGH;          // Current button state
+int lastButtonState = HIGH;      // Previous button state
+unsigned long lastDebounceTime = 0;  // Last time button was toggled
+unsigned long debounceDelay = 50;    // Debounce time in ms
+int buttonPressCount = 0;        // Count of button presses
+
+void setup() {
+  // Initialize button pin as input with pullup
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  
+  // Initialize serial for debugging
+  Serial.begin(9600);
+  Serial.println("Button Counter started");
+  
+  // Initialize LCD
+  lcd.begin(16, 2);
+  lcd.print("Button Count:");
+  updateDisplay();
+}
+
+void loop() {
+  // Read the button state
+  int reading = digitalRead(BUTTON_PIN);
+  
+  // Check if button state changed
+  if (reading != lastButtonState) {
+    // Reset debounce timer
+    lastDebounceTime = millis();
+  }
+  
+  // If enough time has passed, consider the state change valid
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    // If button state has changed
+    if (reading != buttonState) {
+      buttonState = reading;
+      
+      // If button is pressed (LOW when using INPUT_PULLUP)
+      if (buttonState == LOW) {
+        buttonPressCount++;
+        Serial.print("Button pressed. Count: ");
+        Serial.println(buttonPressCount);
+        updateDisplay();
+      }
+    }
+  }
+  
+  // Save the reading for next comparison
+  lastButtonState = reading;
+}
+
+// Update the LCD display with current count
+void updateDisplay() {
+  lcd.setCursor(0, 1);
+  lcd.print("      ");  // Clear previous count
+  lcd.setCursor(0, 1);
+  lcd.print(buttonPressCount);
+}
