@@ -18,3 +18,6 @@ The application includes educational elements like Arduino code samples and expl
 
 This web-based approach allows users to learn about microcontroller programming and electronic circuit design in an accessible format, with visual feedback that reinforces the core concepts of input handling, debouncing, and output display in embedded systems.##
 
+#OUTPUT
+
+![Image](https://github.com/user-attachments/assets/edcd4479-ed51-41f7-a417-27639b99ee8b)
